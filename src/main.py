@@ -50,12 +50,12 @@ async def generate_ws(request: Request):
     await ws.send_json({'name': names.get_first_name()})
 
 
-# https://github.com/tiangolo/fastapi/issues/1509
-# https://stackoverflow.com/questions/63177681/is-there-a-difference-between-running-fastapi-from-uvicorn-command-in-dockerfile
+
 @app.post("/stop")
 async def stop(request: Request):
     import signal
     print("save state")
+    # https://github.com/tiangolo/fastapi/issues/1509
     parent = psutil.Process(psutil.Process(os.getpid()).ppid())
     parent.send_signal(signal.SIGINT) # KeyboardInterrupt
     
