@@ -3,20 +3,19 @@
 For local development/debugging use `localhost:8000`.
 
 Create venv:
-```sh
-python3 -m venv .venv
+```bash
+python3 -m venv venv
 ```
 
-Install requirements:
-```sh
-. .venv/bin/activate
-pip install -r requirements.txt
-deactivate
+Activate vevn and install requirements:
+```bash
+source venv/bin/activate
+pip3 install -r requirements.txt
 ```
 
 How to run app from terminal using venv on local machine during debugging:
-```sh
-${PWD}/.venv/bin/python -m ${PWD}/.venv/bin/uvicorn src.main:app --host localhost --port 8000
+```bash
+uvicorn src.main:app --host localhost --port 8000
 ```
 
 # Deployment
