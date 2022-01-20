@@ -23,6 +23,12 @@ async def generate_ws(request: Request):
     await ws.send_json({'name': names.get_first_name()})
 
 
+@app.post("/shutdown")
+async def shutdown(request: Request):
+    # button illustrates how to shutdown app programmatically
+    shutdown_app()
+
+
 @app.on_event("startup")
 async def startup_event():
     print("init something before server starts")
@@ -30,4 +36,13 @@ async def startup_event():
 
 @app.on_event("shutdown")
 def shutdown_event():
-    print("save something before shut down")
+    print("do something before server shutdowns")
+
+
+@app.websocket("/ws")
+async def init_websocket(websocket: WebSocket):
+    global ws
+    await websocket.accept()
+    ws = websocket
+    while True:
+        data = await websocket.receive_json()

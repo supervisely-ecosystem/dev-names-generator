@@ -30,19 +30,10 @@ templates.env = jinja2.Environment(
     variable_end_string='}}}',
 )
 
-
-@app.websocket("/ws")
-async def init_websocket(websocket: WebSocket):
-    global ws
-    await websocket.accept()
-    ws = websocket
-    while True:
-        data = await websocket.receive_json()
-
-
 def shutdown_app():
     global server_stopped 
     server_stopped = True
+    ws.close()
     # https://github.com/tiangolo/fastapi/issues/1509
     current_process = psutil.Process(os.getpid())
     current_process.send_signal(signal.SIGINT) # emit ctrl + c
@@ -54,9 +45,3 @@ async def check_server_stopped(request: Request, call_next):
       raise HTTPException(status_code=403, detail="Server is being shut down")
     response = await call_next(request)    
     return response
-
-
-@app.post("/shutdown")
-async def shutdown(request: Request):
-    print("do something here")
-    shutdown_app()
