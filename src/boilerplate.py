@@ -45,3 +45,5 @@ async def check_server_stopped(request: Request, call_next):
       raise HTTPException(status_code=403, detail="Server is being shut down")
     response = await call_next(request)    
     return response
+
+#@TODO: add middleware to websocket
