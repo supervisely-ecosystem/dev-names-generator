@@ -54,7 +54,7 @@ async def generate_ws(request: Request):
 @app.post("/stop")
 async def stop(request: Request):
     import signal
-    print("save state")
+    print("do something here")
     # https://github.com/tiangolo/fastapi/issues/1509
     parent = psutil.Process(psutil.Process(os.getpid()).ppid())
     parent.send_signal(signal.SIGINT) # KeyboardInterrupt
