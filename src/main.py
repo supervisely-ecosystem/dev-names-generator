@@ -54,9 +54,10 @@ async def generate_ws(request: Request):
 # https://stackoverflow.com/questions/63177681/is-there-a-difference-between-running-fastapi-from-uvicorn-command-in-dockerfile
 @app.post("/stop")
 async def stop(request: Request):
+    import signal
     print("save state")
     parent = psutil.Process(psutil.Process(os.getpid()).ppid())
-    parent.kill()
+    parent.send_signal(signal.SIGINT) # KeyboardInterrupt
     
 
 @app.websocket("/ws")
