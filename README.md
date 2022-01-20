@@ -11,10 +11,13 @@ Activate vevn and install requirements:
 ```bash
 source venv/bin/activate
 pip3 install -r requirements.txt
+# optional
+deactivate
 ```
 
 How to run app from terminal using venv on local machine during debugging:
 ```bash
+source venv/bin/activate
 uvicorn src.main:app --host localhost --port 8000
 ```
 
