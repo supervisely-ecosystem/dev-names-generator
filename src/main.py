@@ -10,6 +10,9 @@ import jinja2
 # import supervisely as sly
 import names
 
+import time
+import psutil
+import threading
 
 # log app root directory
 app_dir = str(Path(sys.argv[0]).parents[5])
@@ -46,6 +49,15 @@ async def generate(request: Request):
 async def generate_ws(request: Request):
     await ws.send_json({'name': names.get_first_name()})
 
+
+# https://github.com/tiangolo/fastapi/issues/1509
+# https://stackoverflow.com/questions/63177681/is-there-a-difference-between-running-fastapi-from-uvicorn-command-in-dockerfile
+@app.post("/stop")
+async def stop(request: Request):
+    print("save state")
+    parent = psutil.Process(psutil.Process(os.getpid()).ppid())
+    parent.kill()
+    
 
 @app.websocket("/ws")
 async def init_websocket(websocket: WebSocket):

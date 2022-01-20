@@ -13,6 +13,9 @@
             <div>Hello random user: {{ state.name }}</div>
             <el-button type="primary" @click="http('/generate')">Get name (post response)</el-button>
             <el-button type="primary" @click="http('/generate-ws')">Get name (websocket)</el-button>
+            <div style="margin-top: 10px;">
+                <el-button type="danger" @click="http('/stop')">Test stop</el-button>
+            </div>
         </template>
     </sly-app>
 </div>
