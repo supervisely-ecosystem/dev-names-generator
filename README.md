@@ -12,7 +12,7 @@ Activate vevn and install requirements:
 source venv/bin/activate
 pip3 install -r requirements.txt
 # optional
-deactivate
+source deactivate
 ```
 
 How to run app from terminal using venv on local machine during debugging:
