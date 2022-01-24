@@ -2,9 +2,6 @@ from fastapi import FastAPI, Request, WebSocket, HTTPException, WebSocketDisconn
 from fastapi.templating import Jinja2Templates
 from src.boilerplate import app, templates
 import supervisely as sly
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from supervisely.fastapi import WebsocketManager, ShutdownMiddleware 
 
 
