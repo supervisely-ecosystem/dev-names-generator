@@ -24,6 +24,8 @@ app.add_middleware(ShutdownMiddleware)
 templates = Jinja2Templates(directory="templates")
 ws_manager = WebsocketManager()
 
+# state - from client (always replace)
+# data - server
 
 @app.get("/")
 async def read_index(request: Request):
