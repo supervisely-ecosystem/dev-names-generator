@@ -1,13 +1,19 @@
 from fastapi import FastAPI, Request, WebSocket, HTTPException, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
-from src.boilerplate import app, ws, templates, shutdown_app
+from src.boilerplate import app, templates
 import supervisely as sly
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+# from fastapi.middleware.gzip import GZipMiddleware
+# from unicorn import UnicornMiddleware
+from supervisely.fastapi import WebsocketManager, ShutdownMiddleware
 
 import names
 import time
-import random
-import asyncio
 from asgiref.sync import async_to_sync
+
+ws_manager = WebsocketManager()
+app.add_middleware(ShutdownMiddleware, path='/shutdown')
+
 
 @app.get("/")
 async def read_index(request: Request):
@@ -32,16 +38,13 @@ async def generate(request: Request):
 @app.post("/generate-ws")
 async def generate_ws(request: Request):
     state = await request.json()
-    # print("previous name: ", state["name"])
-    # await ws.accept()???
-    # print("ws alive")???
-    await ws.send_json({'name': names.get_first_name()})
+    await ws_manager.broadcast({'name': names.get_first_name()})
 
 
 @app.post("/shutdown")
 async def shutdown(request: Request):
     # button illustrates how to shutdown app programmatically
-    shutdown_app()
+    await graceful_shutdown(app)
 
 
 @app.on_event("startup")
@@ -53,14 +56,7 @@ async def startup_event():
 def shutdown_event():
     print("do something before server shutdowns")
 
- 
+
 @app.websocket("/ws")
-async def init_websocket(websocket: WebSocket):
-    global ws
-    await websocket.accept()
-    ws = websocket
-    try:
-        while True:
-            data = await websocket.receive_json()
-    except WebSocketDisconnect:
-        print('client disconnected from ws')
+async def websocket_endpoint(websocket: WebSocket):
+    await ws_manager.endpoint(websocket)

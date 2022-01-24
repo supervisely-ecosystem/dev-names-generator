@@ -18,7 +18,7 @@ print(f"App root directory: {app_dir}")
 
 app: FastAPI = FastAPI()
 add_timing_middleware(app, prefix="app")
-ws: WebSocket = None
+# ws: WebSocket = None
 server_stopped = False
 
 
@@ -30,20 +30,10 @@ templates.env = jinja2.Environment(
     variable_end_string='}}}',
 )
 
-def shutdown_app():
-    global server_stopped 
-    server_stopped = True
-    ws.close()
-    # https://github.com/tiangolo/fastapi/issues/1509
-    current_process = psutil.Process(os.getpid())
-    current_process.send_signal(signal.SIGINT) # emit ctrl + c
 
-
-@app.middleware("http")
-async def check_server_stopped(request: Request, call_next):
-    if server_stopped:
-      raise HTTPException(status_code=403, detail="Server is being shut down")
-    response = await call_next(request)    
-    return response
-
-#@TODO: add middleware to websocket
+# @app.middleware("http")
+# async def check_server_stopped(request: Request, call_next):
+#     if server_stopped:
+#       raise HTTPException(status_code=403, detail="Server is being shut down")
+#     response = await call_next(request)    
+#     return response
