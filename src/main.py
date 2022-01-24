@@ -2,9 +2,11 @@ import os
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, WebSocket
 import supervisely as sly
-from supervisely.fastapi_helpers import WebsocketManager, ShutdownMiddleware, Jinja2Templates 
+from supervisely.fastapi_helpers import WebsocketManager, \
+    ShutdownMiddleware, shutdown_fastapi, \
+    Jinja2Templates
 
 
 import names
@@ -18,10 +20,9 @@ sys.path.append(app_dir)
 
 
 app: FastAPI = FastAPI()
+app.add_middleware(ShutdownMiddleware)
 templates = Jinja2Templates(directory="templates")
 ws_manager = WebsocketManager()
-app.add_middleware(ShutdownMiddleware, path='/shutdown')
-app.add_api_websocket_route(path='/ws', endpoint=ws_manager.endpoint)
 
 
 @app.get("/")
@@ -51,10 +52,20 @@ async def generate_ws(request: Request):
 
 
 @app.on_event("startup")
-async def startup_event():
+def startup_event():
     print("init something before server starts")
 
 
 @app.on_event("shutdown")
 def shutdown_event():
     print("do something before server shutdowns")
+
+
+@app.post("/shutdown")
+def shutdown(request: Request):
+    shutdown_fastapi(request)
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await ws_manager.endpoint(websocket)
