@@ -1,14 +1,24 @@
-from fastapi import FastAPI, Request, WebSocket, HTTPException, WebSocketDisconnect
-from fastapi.templating import Jinja2Templates
-from src.boilerplate import app, templates
+import os
+import sys
+from pathlib import Path
+
+from fastapi import FastAPI, Request
 import supervisely as sly
-from supervisely.fastapi import WebsocketManager, ShutdownMiddleware 
+from supervisely.fastapi_helpers import WebsocketManager, ShutdownMiddleware, Jinja2Templates 
 
 
 import names
 import time
 from asgiref.sync import async_to_sync
 
+# log app root directory
+app_dir = str(Path(sys.argv[0]).parents[5])
+print(f"App root directory: {app_dir}")
+sys.path.append(app_dir)
+
+
+app: FastAPI = FastAPI()
+templates = Jinja2Templates(directory="templates")
 ws_manager = WebsocketManager()
 app.add_middleware(ShutdownMiddleware, path='/shutdown')
 app.add_api_websocket_route(path='/ws', endpoint=ws_manager.endpoint)
