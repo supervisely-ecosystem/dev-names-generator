@@ -61,11 +61,12 @@ def shutdown_event():
     print("do something before server shutdowns")
 
 
-@app.post("/shutdown")
+# TODO move to middleware
+@app.post("/sly-shutdown-app")
 def shutdown(request: Request):
     shutdown_fastapi(request)
 
 
-@app.websocket("/ws")
+@app.websocket("/sly-ws")
 async def websocket_endpoint(websocket: WebSocket):
     await ws_manager.endpoint(websocket)
