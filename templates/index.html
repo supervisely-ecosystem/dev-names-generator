@@ -11,7 +11,7 @@
              :init-state="{ name: 'max'}">
         <template v-slot="{ state, command, http }">
             <div>Hello random user: {{ state.name }}</div>
-            <el-button type="primary" @click="http('/generate')">Get name (post response)</el-button>
+            <el-button type="primary" @click="post('/generate')">Get name (post response)</el-button>
             <el-button type="primary" @click="http('/generate-ws')">Get name (websocket)</el-button>
             <el-button type="primary" @click="http('/sync-generate')">Get name (sync)</el-button>
             <div style="margin-top: 10px;">
@@ -66,7 +66,7 @@
         created() {
             console.log('First Init WS');
             this.state = this.initState;
-            this.ws = new WebSocket(`ws${document.location.protocol === "https:" ? "s" : ""}://${this.url.replace("http://", "").replace("https://", "").replace(/\/$/, '')}/ws`);
+            this.ws = new WebSocket(`ws${document.location.protocol === "https:" ? "s" : ""}://${this.url.replace("http://", "").replace("https://", "").replace(/\/$/, '')}/sly-app-ws`);
             this.ws.onmessage = (event) => {
                 console.log('Message received from Python', event.data);
                 Object.assign(this.state, JSON.parse(event.data));
