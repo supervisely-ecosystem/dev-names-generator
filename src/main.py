@@ -3,13 +3,12 @@ import sys
 from pathlib import Path
 
 from fastapi import FastAPI, Request, WebSocket
+from fastapi.responses import JSONResponse
+
 import supervisely as sly
-from supervisely.fastapi_helpers import WebsocketManager, ShutdownMiddleware
-
-from supervisely.fastapi_helpers import Jinja2Templates
-
-# from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
-# from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from supervisely.fastapi_helpers import \
+    WebsocketManager, Jinja2Templates, \
+    ShutdownMiddleware, StateMiddleware, DataMiddleware
 
 import names
 import time
@@ -23,22 +22,40 @@ from asgiref.sync import async_to_sync
 # https://github.com/xlwings/jsondiff
 # https://github.com/stefankoegl/python-json-patch
 
-state = {}
-data = {}
 
-# log app root directory
-app_dir = str(Path(sys.argv[0]).parents[5])
-print(f"App root directory: {app_dir}")
-sys.path.append(app_dir)
+# # log app root directory
+# app_dir = str(Path(sys.argv[0]).parents[5])
+# print(f"App root directory: {app_dir}")
+# sys.path.append(app_dir)
+
+#@TODO: http->post
+#@TODO: post('/generate')
+#@TODO: засунуть data и state в app и засовывать их в запрос middleware
+# state -> request 
+# _sly_last_state -> app field
+# _sly_data -> app field
+# _synced_data -> app field
+# app.sync_data()
+# app.shutdown()
+# app - нельзя менять ссылку на исходный объект или можно?????
+
+# ws_manager -> app._ws_manager -> app.update_data(), app.update_state()
+
 
 
 app: FastAPI = FastAPI()
-app.add_middleware(ShutdownMiddleware)
-templates = Jinja2Templates(directory="templates")
-ws_manager = WebsocketManager()
+# app.data = {}
+# app.state = {}
 
-# state - from client (always replace)
-# data - server
+# ws_manager = WebsocketManager()
+templates = Jinja2Templates(directory="templates")
+
+app.add_middleware(ShutdownMiddleware)
+app.add_middleware(StateMiddleware) #, state=state) # создаем sly_app_ws и методы
+app.add_middleware(DataMiddleware) #, data=data) # создаем sly_app_ws и методы
+# app.add_api_websocket_route(path=ws_manager.path, endpoint=ws_manager.endpoint)
+
+
 
 @app.get("/")
 async def read_index(request: Request):
@@ -55,12 +72,22 @@ def sync_generate(request: Request):
 
 @app.post("/generate")
 async def generate(request: Request):
+    request.app.data["5"] = 213
+    # or app.data["5"] = 213
+    app.update_data()
+
     state = await request.json()
     state["name"] = names.get_first_name()
     return state
 
 
 @app.post("/generate-ws")
+async def generate_ws(request: Request):
+    state = await request.json()
+    await ws_manager.broadcast({'name': names.get_first_name()})
+
+
+@app.post("/sly-app-state")
 async def generate_ws(request: Request):
     state = await request.json()
     await ws_manager.broadcast({'name': names.get_first_name()})
@@ -74,8 +101,3 @@ def startup_event():
 @app.on_event("shutdown")
 def shutdown_event():
     print("do something before server shutdowns")
-
-
-@app.websocket("/sly-ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await ws_manager.endpoint(websocket)
