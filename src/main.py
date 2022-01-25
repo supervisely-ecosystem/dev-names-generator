@@ -4,10 +4,12 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request, WebSocket
 import supervisely as sly
-from supervisely.fastapi_helpers import WebsocketManager, \
-    ShutdownMiddleware, shutdown_fastapi, \
-    Jinja2Templates
+from supervisely.fastapi_helpers import WebsocketManager, ShutdownMiddleware
 
+from supervisely.fastapi_helpers import Jinja2Templates
+
+# from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+# from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 import names
 import time
@@ -18,21 +20,11 @@ from asgiref.sync import async_to_sync
 # https://stackoverflow.com/questions/53882241/detect-changes-to-a-nested-dictionary-with-python/53882459
 # https://treyhunner.com/2019/04/why-you-shouldnt-inherit-from-list-and-dict-in-python/
 # https://github.com/seperman/deepdiff
-class Content:
-    def __init__():
-        self._state = {}
-        self._data = {}
+# https://github.com/xlwings/jsondiff
+# https://github.com/stefankoegl/python-json-patch
 
-    def set(self, field, payload, append=False, recursive=False):
-        pass
-        
-
-
-
-
-
-
-exit(0)
+state = {}
+data = {}
 
 # log app root directory
 app_dir = str(Path(sys.argv[0]).parents[5])
@@ -82,12 +74,6 @@ def startup_event():
 @app.on_event("shutdown")
 def shutdown_event():
     print("do something before server shutdowns")
-
-
-# TODO move to middleware
-@app.post("/sly-shutdown-app")
-def shutdown(request: Request):
-    shutdown_fastapi(request)
 
 
 @app.websocket("/sly-ws")
