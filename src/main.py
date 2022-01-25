@@ -15,37 +15,13 @@ import time
 from asgiref.sync import async_to_sync
 
 
-# https://stackoverflow.com/questions/1229068/with-python-can-i-keep-a-persistent-dictionary-and-modify-it
-# https://stackoverflow.com/questions/53882241/detect-changes-to-a-nested-dictionary-with-python/53882459
-# https://treyhunner.com/2019/04/why-you-shouldnt-inherit-from-list-and-dict-in-python/
-# https://github.com/seperman/deepdiff
-# https://github.com/xlwings/jsondiff
-# https://github.com/stefankoegl/python-json-patch
-
-
 # # log app root directory
 # app_dir = str(Path(sys.argv[0]).parents[5])
 # print(f"App root directory: {app_dir}")
 # sys.path.append(app_dir)
 
-#@TODO: http->post
-#@TODO: post('/generate')
-#@TODO: засунуть data и state в app и засовывать их в запрос middleware
-# state -> request 
-# _sly_last_state -> app field
-# _sly_data -> app field
-# _synced_data -> app field
-# app.sync_data()
-# app.shutdown()
-# app - нельзя менять ссылку на исходный объект или можно?????
-
-# ws_manager -> app._ws_manager -> app.update_data(), app.update_state()
-
-
 
 app: FastAPI = FastAPI()
-# app.data = {}
-# app.state = {}
 
 # ws_manager = WebsocketManager()
 templates = Jinja2Templates(directory="templates")
@@ -72,9 +48,9 @@ def sync_generate(request: Request):
 
 @app.post("/generate")
 async def generate(request: Request):
-    request.app.data["5"] = 213
+    # request.app.data["5"] = 213
     # or app.data["5"] = 213
-    app.update_data()
+    # app.update_data()
 
     state = await request.json()
     state["name"] = names.get_first_name()
@@ -83,14 +59,16 @@ async def generate(request: Request):
 
 @app.post("/generate-ws")
 async def generate_ws(request: Request):
-    state = await request.json()
-    await ws_manager.broadcast({'name': names.get_first_name()})
+    pass
+    # state = await request.json()
+    # await ws_manager.broadcast({'name': names.get_first_name()})
 
 
 @app.post("/sly-app-state")
 async def generate_ws(request: Request):
-    state = await request.json()
-    await ws_manager.broadcast({'name': names.get_first_name()})
+    pass
+    # state = await request.json()
+    # await ws_manager.broadcast({'name': names.get_first_name()})
 
 
 @app.on_event("startup")
