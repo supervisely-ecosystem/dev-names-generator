@@ -13,6 +13,27 @@ import names
 import time
 from asgiref.sync import async_to_sync
 
+
+# https://stackoverflow.com/questions/1229068/with-python-can-i-keep-a-persistent-dictionary-and-modify-it
+# https://stackoverflow.com/questions/53882241/detect-changes-to-a-nested-dictionary-with-python/53882459
+# https://treyhunner.com/2019/04/why-you-shouldnt-inherit-from-list-and-dict-in-python/
+# https://github.com/seperman/deepdiff
+class Content:
+    def __init__():
+        self._state = {}
+        self._data = {}
+
+    def set(self, field, payload, append=False, recursive=False):
+        pass
+        
+
+
+
+
+
+
+exit(0)
+
 # log app root directory
 app_dir = str(Path(sys.argv[0]).parents[5])
 print(f"App root directory: {app_dir}")
