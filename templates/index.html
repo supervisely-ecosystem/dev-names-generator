@@ -11,11 +11,14 @@
              :init-state="{ name: 'max'}">
         <template v-slot="{ state, command, http }">
             <div>Hello random user: {{ state.name }}</div>
-            <el-button type="primary" @click="post('/generate')">Get name (post response)</el-button>
+            <el-button type="primary" @click="http('/generate')">Get name (post response)</el-button>
             <el-button type="primary" @click="http('/generate-ws')">Get name (websocket)</el-button>
             <el-button type="primary" @click="http('/sync-generate')">Get name (sync)</el-button>
             <div style="margin-top: 10px;">
                 <el-button type="danger" @click="http('/sly-app-shutdown')">Shutdown app</el-button>
+            </div>
+            <div style="margin-top: 10px;">
+                <el-button type="danger" @click="http('/do-then-shutdown')">Do and then shutdown</el-button>
             </div>
         </template>
     </sly-app>
