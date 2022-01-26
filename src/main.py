@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 import supervisely as sly
 
 from supervisely.fastapi_helpers import ShutdownMiddleware, shutdown
-from supervisely.fastapi_helpers import WebsocketManager, Jinja2Templates, PatchableJson
+from supervisely.fastapi_helpers import WebsocketManager, Jinja2Templates, StateJson, DataJson
 
 import names
 import time
@@ -28,21 +28,24 @@ from asgiref.sync import async_to_sync
 # https://pymotw.com/3/asyncio/synchronization.html
 
 app = FastAPI()
-d = PatchableJson(app)
-d[7] = 10
+
+state1 = StateJson(app)
+state2 = StateJson(app)
+
+data1 = DataJson(app)
+data2 = DataJson(app)
+
+ws1 = WebsocketManager(app)
+ws2 = WebsocketManager(app)
 
 
-
-
-ws = WebsocketManager(app)
 templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(ShutdownMiddleware)
+
+
 # app.add_middleware(StateMiddleware)
 # app.add_middleware(DataMiddleware) #, data=data) # создаем sly_app_ws и методы
-app.add_api_websocket_route(path=ws.path, endpoint=ws.endpoint)
-app.add_api_websocket_route(path=ws.path, endpoint=ws.endpoint)
-
 
 @app.get("/")
 async def read_index(request: Request):
