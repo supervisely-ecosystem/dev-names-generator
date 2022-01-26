@@ -61,10 +61,9 @@ async def read_index(request: Request):
 
 
 @app.post("/generate")
-async def generate(request: Request):
-    state = await request.json()
+async def generate(request: Request, state: StateJson = Depends(StateJson.from_request)):
     state["name"] = names.get_first_name()
-    return state
+    state.synchronize_changes()
 
 
 @app.post("/generate-ws")
