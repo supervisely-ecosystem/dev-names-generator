@@ -9,7 +9,8 @@ from fastapi.responses import JSONResponse
 import supervisely as sly
 
 from supervisely.fastapi_helpers import ShutdownMiddleware, shutdown
-from supervisely.fastapi_helpers import WebsocketManager, Jinja2Templates, StateJson, DataJson
+from supervisely.fastapi_helpers import WebsocketManager, Jinja2Templates
+from supervisely.fastapi_helpers import StateJson, DataJson, LastStateJson, ContextJson
 
 import names
 import time
@@ -25,12 +26,17 @@ from asgiref.sync import async_to_sync
 
 
 # lock state and data
-# https://pymotw.com/3/asyncio/synchronization.html
+# @TODO: 
+# - state middleware with last state support + /sly-app-state
+# - data middleware with /sly-app-data
 
 app = FastAPI()
 
-state1 = StateJson(app)
-state2 = StateJson(app)
+lstate1 = LastStateJson(app, {"a": 1})
+lstate2 = LastStateJson(app, {"a": 2})
+
+state1 = StateJson(app, {"a": 1})
+state2 = StateJson(app, {"a": 2})
 
 data1 = DataJson(app)
 data2 = DataJson(app)
