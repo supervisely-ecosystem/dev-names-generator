@@ -3,55 +3,39 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, Request, WebSocket, Depends
+from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 
 import supervisely as sly
 
-from supervisely.fastapi_helpers import ShutdownMiddleware, shutdown
-from supervisely.fastapi_helpers import WebsocketManager, Jinja2Templates
+from supervisely.fastapi_helpers import ShutdownMiddleware, shutdown, \
+                                        WebsocketMiddleware, \
+                                        StateMiddleware, \
+                                        DataMiddleware
+from supervisely.fastapi_helpers import Jinja2Templates
 from supervisely.fastapi_helpers import StateJson, DataJson, LastStateJson, ContextJson
 
 import names
 import time
 from asgiref.sync import async_to_sync
 
-# from fastapi.middleware.trustedhost import TrustedHostMiddleware
-# from fastapi.middleware.gzip import GZipMiddleware
-
 # # log app root directory
 # app_dir = str(Path(sys.argv[0]).parents[5])
 # print(f"App root directory: {app_dir}")
 # sys.path.append(app_dir)
 
-
-# lock state and data
-# @TODO: 
-# - state middleware with last state support + /sly-app-state
-# - data middleware with /sly-app-data
-
 app = FastAPI()
-
-lstate1 = LastStateJson(app, {"a": 1})
-lstate2 = LastStateJson(app, {"a": 2})
-
-state1 = StateJson(app, {"a": 1})
-state2 = StateJson(app, {"a": 2})
-
-data1 = DataJson(app)
-data2 = DataJson(app)
-
-ws1 = WebsocketManager(app)
-ws2 = WebsocketManager(app)
-
+app.add_middleware(WebsocketMiddleware)
+app.add_middleware(ShutdownMiddleware)
+app.add_middleware(StateMiddleware)
+app.add_middleware(DataMiddleware)
 
 templates = Jinja2Templates(directory="templates")
 
-app.add_middleware(ShutdownMiddleware)
-
-
-# app.add_middleware(StateMiddleware)
-# app.add_middleware(DataMiddleware) #, data=data) # создаем sly_app_ws и методы
+#@TODO: middleware broken request 
+# can not use multiple times
+# request = Request(scope, receive, send)
+#@TODO: statejson as depends
 
 @app.get("/")
 async def read_index(request: Request):
@@ -60,16 +44,21 @@ async def read_index(request: Request):
 
 # @app.post("/sync-generate")
 # def sync_generate(request: Request):
+#     # example how to execute ASYNC methods in SYNC function
 #     state = async_to_sync(request.json)()
 #     time.sleep(5)
 #     state["name"] = names.get_first_name()
-#     return state
+#     async_to_sync(state.synchronize_changes())
 
 
 @app.post("/generate")
-async def generate(request: Request, state: StateJson = Depends(StateJson.from_request)):
-    state["name"] = names.get_first_name()
-    state.synchronize_changes()
+async def generate(request: Request):
+    state = await request.json()
+    #state = await StateJson.from_request(request)
+    x = 10
+    x += 1
+    # state["name"] = names.get_first_name()
+    # state.synchronize_changes()
 
 
 @app.post("/generate-ws")
@@ -77,12 +66,6 @@ async def generate_ws(request: Request):
     pass
     # state = await request.json()
     # await ws_manager.broadcast({'name': names.get_first_name()})
-
-
-# @app.post("/abccs")
-# async def do_then_shutdown(request: Request):
-#     print("do something")
-#     app.shutdown()
 
 
 @app.on_event("startup")
