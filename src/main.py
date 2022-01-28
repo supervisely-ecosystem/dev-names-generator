@@ -35,9 +35,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 # app.add_middleware(WebsocketMiddleware) # sub app #@TODO - reimplement?????
 app.add_middleware(ShutdownMiddleware) 
-# app.add_middleware(StateMiddleware)     # sub app #@TODO - reimplement
+app.add_middleware(StateMiddleware)     # sub app #@TODO - reimplement
 # app.add_middleware(DataMiddleware)      # sub app #@TODO - reimplement to route???
-
+# remove classmethods??? and reimplement to instance methods?
 
 templates = Jinja2Templates(directory="templates")
 
