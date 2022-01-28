@@ -24,11 +24,20 @@ from asgiref.sync import async_to_sync
 # print(f"App root directory: {app_dir}")
 # sys.path.append(app_dir)
 
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+
 app = FastAPI()
-app.add_middleware(WebsocketMiddleware)
-app.add_middleware(ShutdownMiddleware)
-app.add_middleware(StateMiddleware)
-app.add_middleware(DataMiddleware)
+
+from starlette.middleware.base import BaseHTTPMiddleware
+# app.add_middleware(BaseHTTPMiddleware, dispatch=func)
+
+# app.add_middleware(WebsocketMiddleware) # sub app #@TODO - reimplement?????
+app.add_middleware(ShutdownMiddleware) 
+# app.add_middleware(StateMiddleware)     # sub app #@TODO - reimplement
+# app.add_middleware(DataMiddleware)      # sub app #@TODO - reimplement to route???
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -41,6 +50,13 @@ templates = Jinja2Templates(directory="templates")
 async def read_index(request: Request):
     return templates.TemplateResponse('index.html', {'request': request})
 
+# @app.middleware("http")
+# async def add_process_time_header(request: Request, call_next):
+#     start_time = time.time()
+#     response = await call_next(request)
+#     process_time = time.time() - start_time
+#     response.headers["X-Process-Time"] = str(process_time)
+#     return response
 
 # @app.post("/sync-generate")
 # def sync_generate(request: Request):
