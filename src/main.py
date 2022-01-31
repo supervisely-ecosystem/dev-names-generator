@@ -44,6 +44,9 @@ app.add_middleware(DataMiddleware)
 
 templates = Jinja2Templates(directory="templates")
 
+#@TODO: try catch exceptions in async-await
+#@TODO: initialize state / data on server (jsonpatch.JsonPatchConflict: can't replace a non-existent object 'counter')
+
 
 @app.get("/")
 async def read_index(request: Request):
@@ -86,7 +89,7 @@ async def count(request: Request, state: StateJson = Depends(StateJson.from_requ
     for i in range(10):
         asyncio.sleep(1)
         state["counter"] = i
-        state.synchronize_changes()
+        await state.synchronize_changes()
 
 
 @app.on_event("startup")
