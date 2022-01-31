@@ -5,11 +5,13 @@
 <script src="https://unpkg.com/vue"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.15.7/theme-chalk/index.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.15.7/index.min.js"></script>
+<script src="https://raw.githubusercontent.com/supervisely-ecosystem/supervisely-app-frontend-js/master/SlyApp.js"></script>
+
 
 <div id="sly-app">
-    <sly-app :url="document.location.href"
-             :init-state="{ name: 'max', counter: 0}">
-        <template v-slot="{ state, command, http }">
+    <sly-app :url="document.location.href">
+        <template v-slot="{ http, state, data }">
+            <div>{{ data.max }}</div>
             <div>Hello random user: {{ state.name }}</div>
             <el-button type="primary" @click="http('/generate')">Get name (post response)</el-button>
             <el-button type="primary" @click="http('/generate-ws')">Get name (websocket)</el-button>
@@ -28,68 +30,8 @@
     </sly-app>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- supervisely JS Lib -->
-<!-- todo: clean console logs (debug level?) -->
 <script>
-    Vue.component('sly-app', {
-        props: ['url', 'initState'],
-        template: '<div><slot :state="state" :command="command" :http="http" /></div>',
-        data: function () {
-            return {state: {}, ws: null};
-        },
-        methods: {
-            command(command) {
-                console.log('Command!', command);
-                this.ws.send(JSON.stringify({state: this.state, command: command}));
-            },
-            http(command) {
-                console.log('Http!', command);
-                fetch(`${this.url.replace(/\/$/, '')}${command}`, {
-                    method: 'POST', body: JSON.stringify({state: this.state}), headers: {'Content-Type': 'application/json'}
-                }).then(res => res.json()).then((json) => {
-                    Object.assign(this.state, json);
-                });
-            },
-        },
-        created() {
-            console.log('First Init WS');
-            this.state = this.initState;
-            this.ws = new WebSocket(`ws${document.location.protocol === "https:" ? "s" : ""}://${this.url.replace("http://", "").replace("https://", "").replace(/\/$/, '')}/sly-app-ws`);
-            this.ws.onmessage = (event) => {
-                console.log('Message received from Python', event.data);
-                Object.assign(this.state, JSON.parse(event.data));
-            };
-        },
-    });
-
-    new Vue({
-        el: '#sly-app',
-        computed: {
-            document() {
-                return document;
-            }
-        },
-    });
-    // Vue.use(Element);
+    slyApp.init();
 </script>
 
 </body>

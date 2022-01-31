@@ -29,18 +29,14 @@ from asgiref.sync import async_to_sync
 
 app = FastAPI()
 
-
-# from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
-# from fastapi.middleware.trustedhost import TrustedHostMiddleware
-# from fastapi.middleware.gzip import GZipMiddleware
-# from starlette.middleware.base import BaseHTTPMiddleware
-# app.add_middleware(BaseHTTPMiddleware, dispatch=func)
+# remove classmethods??? and reimplement to instance methods?
+LastStateJson({ "name": "max", "counter": 0})
+DataJson({"max": 123})
 
 app.add_middleware(WebsocketMiddleware)
 app.add_middleware(ShutdownMiddleware) 
 app.add_middleware(StateMiddleware)
 app.add_middleware(DataMiddleware)
-# remove classmethods??? and reimplement to instance methods?
 
 templates = Jinja2Templates(directory="templates")
 
