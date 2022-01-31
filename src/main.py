@@ -2,17 +2,14 @@ import asyncio
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
+import uvicorn
 from fastapi import FastAPI, Request, Depends
-from fastapi.responses import JSONResponse
 
 import supervisely as sly
-
 from supervisely.fastapi_helpers import ShutdownMiddleware, shutdown, \
-                                        WebsocketMiddleware, WebsocketManager, \
-                                        StateMiddleware, \
-                                        DataMiddleware
+                                        WebsocketMiddleware, \
+                                        StateMiddleware, DataMiddleware
 from supervisely.fastapi_helpers import Jinja2Templates
 from supervisely.fastapi_helpers import StateJson, DataJson, LastStateJson, ContextJson
 
@@ -20,25 +17,28 @@ import names
 import time
 from asgiref.sync import async_to_sync
 
-# # log app root directory
-# app_dir = str(Path(sys.argv[0]).parents[5])
-# print(f"App root directory: {app_dir}")
+# app (repo) root directory #@TODO: not working
+# app_dir = os.path.abspath(Path(sys.argv[0]).parents[1])
 # sys.path.append(app_dir)
+# print(f"App root directory: {app_dir}")
 
-
-
-app = FastAPI()
-
-LastStateJson({ "name": "max", "counter": 0})
+# init state and data
+LastStateJson({ "name": "abc", "counter": 0})
 DataJson({"max": 123})
 
-app.add_middleware(WebsocketMiddleware)
-app.add_middleware(ShutdownMiddleware) 
+app = FastAPI()
+# app.add_middleware(WebsocketMiddleware)
+# app.add_middleware(ShutdownMiddleware) 
 app.add_middleware(StateMiddleware)
 app.add_middleware(DataMiddleware)
-
 templates = Jinja2Templates(directory="templates")
 
+
+# subapi = FastAPI()
+# @subapi.get("/sub")
+# def read_sub():
+#     return {"message": "Hello World from sub API"}
+# app.mount("/subapi", subapi)
 
 @app.get("/")
 async def read_index(request: Request):
