@@ -29,7 +29,6 @@ from asgiref.sync import async_to_sync
 
 app = FastAPI()
 
-# remove classmethods??? and reimplement to instance methods?
 LastStateJson({ "name": "max", "counter": 0})
 DataJson({"max": 123})
 
@@ -39,9 +38,6 @@ app.add_middleware(StateMiddleware)
 app.add_middleware(DataMiddleware)
 
 templates = Jinja2Templates(directory="templates")
-
-#@TODO: try catch exceptions in async-await
-#@TODO: initialize state / data on server (jsonpatch.JsonPatchConflict: can't replace a non-existent object 'counter')
 
 
 @app.get("/")
@@ -67,9 +63,7 @@ async def generate(request: Request, state: StateJson = Depends(StateJson.from_r
 @app.post("/generate-ws")
 async def generate_ws(request: Request, state: StateJson = Depends(StateJson.from_request)):
     state["name"] = names.get_first_name()
-    await state.synchronize_changes()
-    # or
-    # await WebsocketManager().broadcast(state.get_changes())
+    await state.synchronize_changes() # using websocket
 
 
 @app.post("/do-then-shutdown")
