@@ -8,17 +8,21 @@
 
 <div id="sly-app">
     <sly-app :url="document.location.href"
-             :init-state="{ name: 'max'}">
+             :init-state="{ name: 'max', counter: 0}">
         <template v-slot="{ state, command, http }">
             <div>Hello random user: {{ state.name }}</div>
             <el-button type="primary" @click="http('/generate')">Get name (post response)</el-button>
             <el-button type="primary" @click="http('/generate-ws')">Get name (websocket)</el-button>
             <el-button type="primary" @click="http('/sync-generate')">Get name (sync)</el-button>
             <div style="margin-top: 10px;">
-                <el-button type="danger" @click="http('/sly-app-shutdown')">Shutdown app</el-button>
+                <el-button type="danger" @click="http('/sly-app-shutdown')">Shutdown app (middleware)</el-button>
             </div>
             <div style="margin-top: 10px;">
                 <el-button type="danger" @click="http('/do-then-shutdown')">Do and then shutdown</el-button>
+            </div>
+            <div style="margin-top: 10px;">
+                <div>Counter: {{state.counter}}</div>
+                <el-button type="primary" @click="http('/count')">Count 0-10</el-button>
             </div>
         </template>
     </sly-app>
