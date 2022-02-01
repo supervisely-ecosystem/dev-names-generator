@@ -28,6 +28,7 @@ from asgiref.sync import async_to_sync
 #@TODO: test integration into panel
 #@TODO: vscode server
 #@TODO: browse agent files in team files
+#@TODO: vscode-server + autoreload
 
 # init state and data (singletons)
 LastStateJson({ "name": "abc", "counter": 0})
