@@ -9,7 +9,6 @@ import supervisely as sly
 from supervisely.fastapi_helpers import get_subapp, shutdown, Jinja2Templates
 from supervisely.fastapi_helpers import StateJson, DataJson, LastStateJson, ContextJson
 
-#@TODO: class or instance method cls._field from request, etc...
 import names
 import time
 from asgiref.sync import async_to_sync
@@ -18,6 +17,8 @@ from asgiref.sync import async_to_sync
 # app_dir = os.path.abspath(Path(sys.argv[0]).parents[1])
 # sys.path.append(app_dir)
 # print(f"App root directory: {app_dir}")
+
+#@TODO: change both state and data and return them in response
 
 # init state and data (singletons)
 LastStateJson({ "name": "abc", "counter": 0})
@@ -35,28 +36,23 @@ async def read_index(request: Request):
     return templates.TemplateResponse('index.html', {'request': request})
 
 
-@app.post("/sync-generate")
-def sync_generate(request: Request):
-    # example how to execute ASYNC methods in SYNC function
-    json_body = async_to_sync(request.json)()
-    time.sleep(1.5)
-    # state["name"] = names.get_first_name()
-    # async_to_sync(state.synchronize_changes())
-
-
 @app.post("/generate")
 async def generate(request: Request, state: StateJson = Depends(StateJson.from_request)):
-    s1 = await request.json()
-    s2 = await request.json()
-    s3 = await request.json()
     state["name"] = names.get_first_name()
-    return state.get_changes()
+    return state.get_changes()  # return state changes to client
 
 
 @app.post("/generate-ws")
 async def generate_ws(request: Request, state: StateJson = Depends(StateJson.from_request)):
     state["name"] = names.get_first_name()
-    await state.synchronize_changes() # using websocket
+    await state.synchronize_changes()  # use websocket to send state changes to client
+
+
+@app.post("/sync-generate")
+def sync_generate(request: Request, state: StateJson = Depends(StateJson.from_request)):
+    state["name"] = names.get_first_name()
+    time.sleep(0.5)
+    async_to_sync(state.synchronize_changes)()
 
 
 @app.post("/do-then-shutdown")
