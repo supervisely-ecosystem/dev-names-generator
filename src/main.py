@@ -1,8 +1,4 @@
 import asyncio
-import os
-import sys
-from pathlib import Path
-
 from fastapi import FastAPI, Request, Depends
 
 import supervisely as sly
@@ -13,18 +9,32 @@ import names
 import time
 from asgiref.sync import async_to_sync
 
+# import os
+# import sys
+# from pathlib import Path
 # app (repo) root directory #@TODO: not working
 # app_dir = os.path.abspath(Path(sys.argv[0]).parents[1])
 # sys.path.append(app_dir)
 # print(f"App root directory: {app_dir}")
 
 #@TODO: change both state and data and return them in response
+#@TODO: long method without await and then stop task manually from client
+#@TODO: umar zoom-to-figure - use in clicker app?
+#@TODO: custom vue.js method for python devs (example)
+#@TODO: apps 2.0 apps examples (aka aed)
+#@TODO: global-dependencies max
+#@TODO: use state/data xorrectly in our all official examples
+#@TODO: tiny dockerimage 
+#@TODO: test integration into panel
+#@TODO: vscode server
+#@TODO: browse agent files in team files
 
 # init state and data (singletons)
 LastStateJson({ "name": "abc", "counter": 0})
 DataJson({"max": 123, "counter": 0})
 
 app = FastAPI()
+# @TODO: get sypervisely endpoints?
 sly_app = get_subapp()
 app.mount("/sly", sly_app)
 
@@ -35,11 +45,11 @@ templates = Jinja2Templates(directory="templates")
 async def read_index(request: Request):
     return templates.TemplateResponse('index.html', {'request': request})
 
-
-@app.post("/generate")
-async def generate(request: Request, state: StateJson = Depends(StateJson.from_request)):
-    state["name"] = names.get_first_name()
-    return state.get_changes()  # return state changes to client
+# #@TODO: hide functionality -> return changes 
+# @app.post("/generate")
+# async def generate(request: Request, state: StateJson = Depends(StateJson.from_request)):
+#     state["name"] = names.get_first_name()
+#     return state.get_changes()  # return state changes to client
 
 
 @app.post("/generate-ws")
@@ -51,7 +61,7 @@ async def generate_ws(request: Request, state: StateJson = Depends(StateJson.fro
 @app.post("/sync-generate")
 def sync_generate(request: Request, state: StateJson = Depends(StateJson.from_request)):
     state["name"] = names.get_first_name()
-    time.sleep(0.5)
+    time.sleep(50)
     async_to_sync(state.synchronize_changes)()
 
 
