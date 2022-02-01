@@ -18,14 +18,18 @@
             <el-button type="primary" @click="post('/generate-ws')">Get name (websocket)</el-button>
             <el-button type="primary" @click="post('/sync-generate')">Get name (sync)</el-button>
             <div style="margin-top: 10px;">
-                <el-button type="danger" @click="post('/sly-app-shutdown')">Shutdown app (middleware)</el-button>
+                <el-button type="danger" @click="post('/sly/shutdown')">Shutdown app (sly endpoint)</el-button>
             </div>
             <div style="margin-top: 10px;">
-                <el-button type="danger" @click="post('/do-then-shutdown')">Do and then shutdown</el-button>
+                <el-button type="danger" @click="post('/do-then-shutdown')">Do custom things and then shutdown programmatically</el-button>
             </div>
             <div style="margin-top: 10px;">
                 <div>State counter: {{state.counter}}</div>
-                <el-button type="primary" @click="post('/count')">Count state var from 0 to 10</el-button>
+                <el-button type="primary" @click="post('/count-state')">Count state var from 0 to 10</el-button>
+            </div>
+            <div style="margin-top: 10px;">
+                <div>Data counter: {{data.counter}}</div>
+                <el-button type="primary" @click="post('/count-data')">Count data var from 0 to 10</el-button>
             </div>
             <!-- <div style="margin-top: 10px;">
                 <div>State counter: {{state.counter}}</div>

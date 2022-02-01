@@ -22,7 +22,7 @@ from asgiref.sync import async_to_sync
 
 # init state and data (singletons)
 LastStateJson({ "name": "abc", "counter": 0})
-DataJson({"max": 123})
+DataJson({"max": 123, "counter": 0})
 
 app = FastAPI()
 sly_app = get_subapp()
@@ -58,17 +58,24 @@ def sync_generate(request: Request, state: StateJson = Depends(StateJson.from_re
 @app.post("/do-then-shutdown")
 async def do_then_shutdown(request: Request, state: StateJson = Depends(StateJson.from_request)):
     print("do something here and then manual shutdown")
-    shutdown(app)
-    # or 
-    # shutdown(request.app)
+    shutdown()
 
 
-@app.post("/count")
-async def count(request: Request, state: StateJson = Depends(StateJson.from_request)):
+@app.post("/count-state")
+async def count_state(request: Request, state: StateJson = Depends(StateJson.from_request)):
     for i in range(10):
-        asyncio.sleep(1)
+        await asyncio.sleep(0.5)
         state["counter"] = i
         await state.synchronize_changes()
+
+
+@app.post("/count-data")
+async def count_state(request: Request, state: StateJson = Depends(StateJson.from_request)):
+    data = DataJson() # singleton
+    for i in range(10):
+        await asyncio.sleep(0.5)
+        data["counter"] = i
+        await data.synchronize_changes()
 
 
 @app.on_event("startup")
