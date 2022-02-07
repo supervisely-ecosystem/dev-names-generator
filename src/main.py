@@ -2,8 +2,10 @@ import asyncio
 from fastapi import FastAPI, Request, Depends
 
 import supervisely as sly
-from supervisely.fastapi_helpers import create_supervisely_app, shutdown, get_app_data_dir, Jinja2Templates
-from supervisely.fastapi_helpers import StateJson, DataJson, LastStateJson, ContextJson
+# from supervisely.fastapi_helpers import create_supervisely_app, shutdown, get_app_data_dir, Jinja2Templates
+# from supervisely.fastapi_helpers import StateJson, DataJson, LastStateJson, ContextJson
+
+
 
 import names
 import time
@@ -26,21 +28,29 @@ import os
 #@TODO: use state/data xorrectly in our all official examples
 #@TODO: tiny dockerimage 
 #@TODO: test integration into panel
-#@TODO: vscode server
-#@TODO: browse agent files in team files
-#@TODO: vscode-server + autoreload
+
 
 # init state and data (singletons)
-LastStateJson({ "name": "abc", "counter": 0})
-DataJson({"max": 123, "counter": 0})
+sly.app.LastStateJson({ "name": "abc", "counter": 0})
+sly.app.DataJson({"max": 123, "counter": 0})
+
 
 app = FastAPI()
-sly_app = create_supervisely_app()
+sly_app = sly.app.fastapi.create()
 app.mount("/sly", sly_app)
 
-templates = Jinja2Templates(directory="templates")
+templates = sly.app.fastapi.Jinja2Templates(directory="templates")
 
-app_data_dir = get_app_data_dir()
+
+
+# sly.app.fastapi.create()
+# sly.app.fastapi.shutdown()
+# sly.app.fastapi.Jinja2Templates
+# sly.app.get_data_dir()
+# sly.app.StateJson
+# sly.app.DataJson 
+# sly.app.LastStateJson 
+# sly.app.ContextJson
 
 
 @app.get("/")
@@ -70,7 +80,7 @@ def sync_generate(request: Request, state: StateJson = Depends(StateJson.from_re
 @app.post("/do-then-shutdown")
 async def do_then_shutdown(request: Request, state: StateJson = Depends(StateJson.from_request)):
     print("do something here and then manual shutdown")
-    shutdown()
+    sly.app.fastapi.shutdown()
 
 
 @app.post("/count-state")
@@ -83,7 +93,7 @@ async def count_state(request: Request, state: StateJson = Depends(StateJson.fro
 
 @app.post("/count-data")
 async def count_state(request: Request, state: StateJson = Depends(StateJson.from_request)):
-    data = DataJson() # singleton
+    data = sly.app.DataJson() # singleton
     for i in range(10):
         await asyncio.sleep(0.5)
         data["counter"] = i
@@ -93,6 +103,8 @@ async def count_state(request: Request, state: StateJson = Depends(StateJson.fro
 @app.on_event("startup")
 def startup_event():
     print("startup_event --- init something before server starts")
+    sly.app.get_data_dir()
+    
 
 
 @app.on_event("shutdown")

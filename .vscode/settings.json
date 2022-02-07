@@ -8,8 +8,8 @@
         "**/Thumbs.db": true,
         "**/__pycache__*": true,
         "**/venv": true,
-        "**/supervisely/[abcdeghijklmnopqrstuvwxyz_R]*": true,
-        "**/supervisely/f[bcdeghijklmnopqrstuvwxyz_]*": true,
+        // "**/supervisely/[abcdeghijklmnopqrstuvwxyz_R]*": true,
+        // "**/supervisely/f[bcdeghijklmnopqrstuvwxyz_]*": true,
     },
     "explorerExclude.backup": null
 }
