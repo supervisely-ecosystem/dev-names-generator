@@ -2,14 +2,14 @@ import asyncio
 from fastapi import FastAPI, Request, Depends
 
 import supervisely as sly
-from supervisely.fastapi_helpers import get_subapp, shutdown, Jinja2Templates
+from supervisely.fastapi_helpers import create_supervisely_app, shutdown, get_app_data_dir, Jinja2Templates
 from supervisely.fastapi_helpers import StateJson, DataJson, LastStateJson, ContextJson
 
 import names
 import time
 from asgiref.sync import async_to_sync
 
-# import os
+import os
 # import sys
 # from pathlib import Path
 # app (repo) root directory #@TODO: not working
@@ -35,11 +35,12 @@ LastStateJson({ "name": "abc", "counter": 0})
 DataJson({"max": 123, "counter": 0})
 
 app = FastAPI()
-# @TODO: get sypervisely endpoints?
-sly_app = get_subapp()
+sly_app = create_supervisely_app()
 app.mount("/sly", sly_app)
 
 templates = Jinja2Templates(directory="templates")
+
+app_data_dir = get_app_data_dir()
 
 
 @app.get("/")
