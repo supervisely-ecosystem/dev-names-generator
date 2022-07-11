@@ -13,5 +13,6 @@
     "icon": "https://img.icons8.com/color/100/000000/my-name-is-jeff.png",
     "integrated_into": ["panel"],
     "community_agent": false,
+    "min_agent_version": "6.4.0",
     "icon_background": "#FFFFFF"
   }
