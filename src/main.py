@@ -38,6 +38,7 @@ async def read_index(request: Request):
 @app.post("/generate")
 async def generate(request: Request, state: sly.app.StateJson = Depends(sly.app.StateJson.from_request)):
     state["name"] = names.get_first_name()
+    raise RuntimeError('')
     await state.synchronize_changes()
     #return state.get_changes()  # hidden functionality
     
