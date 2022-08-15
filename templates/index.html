@@ -17,13 +17,14 @@
   window.Vue = sly.Vue;
 </script>
 <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2.0.4/dist/socket.io.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/supervisely-ecosystem/supervisely-app-frontend-js@v0.0.18/SlyApp.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/gh/supervisely-ecosystem/supervisely-app-frontend-js/SlyApp.js" type="module"></script>
 
 
 <div id="sly-app">
     <!-- @TODO: hide url - use default -->
     <sly-app :url="document.location.href">
-        <template v-slot="{ post, state, data }">
+        <template v-slot="{ post, state, data, session }">
+            <app-header-widget v-if="session" :session-id="session.id" />
             <div>{{ data.max }}</div>
             <div>Hello random user: {{ state.name }}</div>
             <el-button type="primary" @click="post('/generate')">Get name (post response)</el-button>
