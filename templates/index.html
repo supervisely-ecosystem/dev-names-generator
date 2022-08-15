@@ -27,7 +27,7 @@
     <sly-app :url="document.location.href">
         <template v-slot="{ post, state, data, session }">
             {{session.id}}
-            <sly-app-header v-if="session" :session-id="session.id" />
+            
             <div>{{ data.max }}</div>
             <div>Hello random user: {{ state.name }}</div>
             <el-button type="primary" @click="post('/generate')">Get name (post response)</el-button>
