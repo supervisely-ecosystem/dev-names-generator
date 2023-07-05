@@ -10,7 +10,7 @@
   "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
   "port": 8000,
   "task_location": "application_sessions",
-  "icon": "https://img.icons8.com/color/100/000000/my-name-is-jeff.png",
+  "icon": "https://github.com/supervisely-ecosystem/dev-names-generator/assets/48245050/cd1276ba-9eb6-4fef-a55b-5047e6bc4b46",
   "integrated_into": [
     "panel"
   ],
